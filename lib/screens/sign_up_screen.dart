@@ -3,15 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_fasum/screens/home_screen.dart';
 
-
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
-
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
 }
-
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _emailController = TextEditingController();
@@ -22,20 +19,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _isLoading = false;
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
- 
+
   bool _isValidEmail(String email) {
     String emailRegex =
-        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zAZ0-9-]+)*$";
+        r"^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zAZ0-9-]+)$";
     return RegExp(emailRegex).hasMatch(email);
   }
-
 
   void _showErrorMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), duration: const Duration(seconds: 2)),
     );
   }
-
 
   String _getAuthErrorMessage(String code) {
     switch (code) {
@@ -49,7 +44,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
         return 'An error occurred. Please try again.';
     }
   }
-
 
   void _signUp() async {
     if (!_formKey.currentState!.validate()) {
@@ -84,7 +78,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       setState(() => _isLoading = false);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +131,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     decoration: InputDecoration(
                       labelText: 'Password',
                       border: const OutlineInputBorder(),
-                      prefixIcon: const Icon(Icons.lock),
+                      prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         onPressed: () {
                           setState(() {
@@ -161,7 +154,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       }
                       return null;
                     },
-                    obscureText: _isPasswordVisible,
+                    obscureText: !_isPasswordVisible,
                   ),
                   const SizedBox(height: 16.0),
                   TextFormField(
@@ -173,7 +166,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       suffixIcon: IconButton(
                         onPressed: () {
                           setState(() {
-                            _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                            _isConfirmPasswordVisible =
+                                !_isConfirmPasswordVisible;
                           });
                         },
                         icon: Icon(
@@ -198,9 +192,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   _isLoading
                       ? const CircularProgressIndicator()
                       : ElevatedButton(
-                        onPressed: _signUp,
-                        child: const Text('Sign Up'),
-                      ),
+                          onPressed: _signUp,
+                          child: const Text('Sign Up'),
+                        ),
                 ],
               ),
             ),
