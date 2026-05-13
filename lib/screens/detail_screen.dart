@@ -1,6 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_application_fasum/screens/full_image_screen.dart';
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailScreen extends StatefulWidget {
   const DetailScreen({
@@ -44,179 +47,113 @@ class _DetailScreenState extends State<DetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final createdAtFormatted = DateFormat(
+      'dd MMMM yyyy, HH:mm',
+    ).format(widget.createdAt);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Detail Post'), elevation: 0),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Hero Image
-            Hero(
-              tag: widget.heroTag,
-              child: Container(
-                width: double.infinity,
-                height: 300,
-                color: Colors.grey[300],
+      appBar: AppBar(title: const Text('Detail Laporan')),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            children: [
+              Hero(
+                tag: widget.heroTag,
                 child: Image.memory(
                   base64Decode(widget.imageBase64),
                   fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: 250,
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Row untuk kategori & waktu
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.category,
-                                  size: 20,
-                                  color: Colors.red,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  widget.category,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+              Positioned(
+                top: 12,
+                right: 12,
+                child: IconButton(
+                  icon: const Icon(Icons.fullscreen, color: Colors.white),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => FullScreenImageScreen(
+                          imageBase64: widget.imageBase64,
                         ),
                       ),
-                      Column(
+                    );
+                  },
+                  tooltip: 'Lihat gambar penuh',
+                  style: IconButton.styleFrom(backgroundColor: Colors.black45),
+                ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Kiri: Kategori & Waktu
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(
-                            Icons.access_time,
-                            size: 20,
-                            color: Colors.blue,
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.category,
+                                size: 20,
+                                color: Colors.red,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                widget.category,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            widget.createdAt.toString().split(' ')[0],
-                            style: const TextStyle(fontSize: 14),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.access_time,
+                                size: 20,
+                                color: Colors.blue,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                createdAtFormatted,
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  // Description
-                  Text(
-                    widget.description,
-                    style: const TextStyle(fontSize: 16, height: 1.5),
-                  ),
-                  const SizedBox(height: 20),
-                  // User Info
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 24,
-                        backgroundColor: Colors.blue[100],
-                        child: Text(
-                          widget.fullName[0].toUpperCase(),
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue[700],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.fullName,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                            Text(
-                              widget.createdAt.toString().split('.')[0],
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  // Location Button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: openMap,
-                      icon: const Icon(Icons.location_on),
-                      label: const Text('Lihat di Google Maps'),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  // Coordinates Display
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.access_time,
-                        size: 20,
-                        color: Colors.blue,
+                    // Kanan: Icon map
+                    IconButton(
+                      onPressed: openMap,
+                      icon: const Icon(
+                        Icons.map,
+                        size: 38,
+                        color: Colors.lightGreen,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'createdAtFormatted',
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.location_on,
-                        size: 20,
-                        color: Colors.red,
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Lat: ${widget.latitude.toStringAsFixed(4)}',
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                            Text(
-                              'Long: ${widget.longitude.toStringAsFixed(4)}',
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                      tooltip: "Buka di Google Maps",
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Text(widget.description, style: const TextStyle(fontSize: 16)),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
